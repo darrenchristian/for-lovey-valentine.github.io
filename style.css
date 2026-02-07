@@ -1,0 +1,342 @@
+:root {
+    --primary-color: #ff4d6d;
+    --secondary-color: #ff8fa3;
+    --bg-color: #fff0f3;
+    --text-color: #590d22;
+    --white: #ffffff;
+    --heart-color: #c9184a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    /* Prevent text selection during frantic clicking */
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23ff4d6d'><path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/></svg>"), auto;
+}
+
+#hearts-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.85);
+    /* Glassmorphism */
+    backdrop-filter: blur(10px);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    max-width: 90%;
+    width: 500px;
+    transition: transform 0.5s ease-in-out;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.container.shifted {
+    transform: translateY(-100px);
+    /* Move up to make room for film roll */
+}
+
+h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3.5rem;
+    color: var(--heart-color);
+    margin-bottom: 2rem;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 2rem;
+}
+
+/* Base button styles */
+.btn {
+    border: none;
+    padding: 12px 32px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+}
+
+/* Yes Button */
+.yes-btn {
+    background-color: #2ecc71;
+    /* Green for go/yes */
+    color: white;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+    display: flex;
+    align-items: center;
+    /* Center icon and text */
+    gap: 8px;
+    z-index: 5;
+}
+
+.yes-btn:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
+}
+
+.yes-btn:active {
+    transform: translateY(1px);
+}
+
+.icon {
+    font-size: 1.4rem;
+    /* Adjust emoji size */
+}
+
+/* No Button */
+.no-btn {
+    background-color: #ef476f;
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 71, 111, 0.4);
+    z-index: 5;
+}
+
+.no-btn:hover {
+    background-color: #d90429;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 71, 111, 0.6);
+}
+
+/* Film Roll Styles */
+.film-roll-container {
+    position: fixed;
+    bottom: -300px;
+    /* Hidden fast */
+    left: 0;
+    width: 100%;
+    height: 220px;
+    background-color: #1a1a1a;
+    z-index: 20;
+    overflow: hidden;
+    transition: bottom 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-top: 4px solid #333;
+    border-bottom: 4px solid #333;
+    /* Create sprocket holes visual effect with background-image if we wanted, 
+       but using pseudo-elements on frames is easier for layout */
+}
+
+.film-roll-container.active {
+    bottom: 20px;
+}
+
+/* The sprockets (holes) track */
+.film-roll-container::before,
+.film-roll-container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 25px;
+    background-image: radial-gradient(circle, #fff 40%, transparent 45%);
+    background-size: 30px 100%;
+    /* Size of holes */
+    background-repeat: repeat-x;
+    z-index: 25;
+}
+
+.film-roll-container::before {
+    top: 10px;
+}
+
+.film-roll-container::after {
+    bottom: 10px;
+}
+
+.film-track {
+    display: flex;
+    height: 100%;
+    width: max-content;
+    /* Allow it to be as wide as needed */
+    padding: 0 50px;
+    /* Space on ends */
+    animation: scrollFilm 20s linear infinite;
+}
+
+.film-frame {
+    height: 100%;
+    width: 280px;
+    padding: 40px 15px;
+    /* Clear the sprockets zone */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: #111;
+    border-right: 2px solid #333;
+}
+
+.photo {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    border-radius: 2px;
+}
+
+.photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.3) contrast(1.1);
+    /* Old photo feel */
+    transition: transform 0.3s;
+}
+
+.photo:hover img {
+    transform: scale(1.1);
+    filter: sepia(0) contrast(1);
+}
+
+
+/* Falling Hearts & Roses Animations */
+.falling-element {
+    position: absolute;
+    top: -50px;
+    animation: fall linear forwards;
+    font-size: 1.5rem;
+    opacity: 0.8;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(360deg);
+    }
+}
+
+/* Button Animations */
+.shake {
+    animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0) scale(var(--scale-factor, 1));
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0) scale(var(--scale-factor, 1));
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0) scale(var(--scale-factor, 1));
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0) scale(var(--scale-factor, 1));
+    }
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scrollFilm {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+        /* Start simple */
+    }
+}
+
+/* Particle Explosion */
+.particle {
+    position: absolute;
+    pointer-events: none;
+    animation: explode 1s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes explode {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .container {
+        padding: 2rem;
+        width: 90%;
+    }
+
+    .container.shifted {
+        transform: translateY(-80px);
+    }
+
+    .btn {
+        padding: 10px 24px;
+        font-size: 1rem;
+    }
+
+    .film-roll-container {
+        height: 180px;
+    }
+
+    .film-track {
+        animation-duration: 15s;
+    }
+
+    .film-frame {
+        width: 220px;
+        padding: 35px 10px;
+    }
+}
